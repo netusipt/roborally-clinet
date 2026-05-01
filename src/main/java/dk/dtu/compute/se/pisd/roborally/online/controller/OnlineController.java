@@ -11,6 +11,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class OnlineController {
     /**
      * The root URL of the backend for all the REST services.
      */
-    public final String ROBORALLY_BACKEND_URL = "http://localhost:8080/roborally/";
+    public final String ROBORALLY_BACKEND_URL = "http://localhost:8070/roborally/";
 
     /**
      * The RestClient that can be used throughout all functions of this OnlineController
@@ -54,9 +55,38 @@ public class OnlineController {
             //      returened by the backend (with the correct uid) is added
             //      as onLineUser in this controller! (NOT the once created
             //      in the code below!)
-            User user = new User();
-            user.setName(name);
-            setOnlineUser(user);
+            // User user = new User();
+            // user.setName(name);
+            // setOnlineUser(user);
+            try {
+                List<User> users = restClient.get()
+                        .uri("/user/search?name=" + name)
+                        .retrieve()
+                        .body(new ParameterizedTypeReference<List<User>>() {});
+                if (users != null && !users.isEmpty()) {
+                    setOnlineUser(users.get(0));
+                } else {
+                    // User not found, create in backend via Spring Data REST endpoint
+                    User user = new User();
+                    user.setName(name);
+                    User created = RestClient.builder()
+                            .baseUrl("http://localhost:8070/")
+                            .build()
+                            .post()
+                            .uri("/user")
+                            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                            .body(user)
+                            .retrieve()
+                            .body(User.class);
+                    setOnlineUser(created);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Sign in failed");
+                alert.setHeaderText("Could not sign in. Is the backend running?");
+                alert.showAndWait();
+            }
         }
     }
 
@@ -116,7 +146,10 @@ public class OnlineController {
             // TODO Assignment 7b: Obtain the list of all games from the backend!
             // TODO Assignment 7c/7e: And at some later point, this should only
             //      return the games open for registration (not started yet).
-            List<Game> games = new ArrayList<Game>(); // For now this list is empty
+            List<Game> games = restClient.get()
+                    .uri("/game")
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<List<Game>>() {});
             onlineState.setOpenGames(games);
         } catch (Exception e) {
             onlineState.setOpenGames(null);
@@ -170,6 +203,11 @@ public class OnlineController {
 
                 // TODO Assignment 7b: Create the game (in the backend) with the config information
                 //      provided in the game configuration
+                Game created = restClient.post()
+                        .uri("/game/create")
+                        .body(game)
+                        .retrieve()
+                        .body(Game.class);
                 // TODO Assignment 7c: Extend the game creation so that the currently signed in user
                 //      is the owener of the game, which should also be registered as the first
                 //      player of the game
