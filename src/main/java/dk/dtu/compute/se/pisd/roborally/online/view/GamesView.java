@@ -2,6 +2,7 @@ package dk.dtu.compute.se.pisd.roborally.online.view;
 
 import dk.dtu.compute.se.pisd.roborally.online.controller.OnlineController;
 import dk.dtu.compute.se.pisd.roborally.online.model.Game;
+import dk.dtu.compute.se.pisd.roborally.online.model.GameState;
 
 import dk.dtu.compute.se.pisd.roborally.online.model.Player;
 import javafx.geometry.Insets;
@@ -65,7 +66,8 @@ public class GamesView extends GridPane {
                         // probably not needed since joinGame should catch possible exceptions
                     }
                 });
-                if (game.getPlayers().size() >= game.getMaxPlayers() || onlineController.userInGame(game)) {
+                boolean active = game.getState() == GameState.ACTIVE;
+                if (active || game.getPlayers().size() >= game.getMaxPlayers() || onlineController.userInGame(game)) {
                     joinButton.setDisable(true);
                 } else {
                     joinButton.setDisable(false);
@@ -79,17 +81,22 @@ public class GamesView extends GridPane {
                         // probably not needed since joinGame should catch possible exceptions
                     }
                 });
-                if (!onlineController.userInGame(game) || onlineController.userOwnsGame(game)) {
+                if (active || !onlineController.userInGame(game) || onlineController.userOwnsGame(game)) {
                     leaveButton.setDisable(true);
                 } else {
                     leaveButton.setDisable(false);
                 }
 
-                Button startButton = new Button("Start");
+                // Assignment 7e: in SIGNUP only the owner can start the game
+                //                (when min<=players<=max). When ACTIVE, the
+                //                button becomes a "Play" entry for any player.
+                Button startButton = new Button(active ? "Play" : "Start");
                 startButton.setOnAction( e -> onlineController.gameSelected(game) );
-                if (game.getMinPlayers() <= game.getPlayers().size() &&
-                        game.getMaxPlayers() >= game.getPlayers().size() &&
-                        onlineController.userInGame(game)) {
+                if (active) {
+                    startButton.setDisable(!onlineController.userInGame(game));
+                } else if (onlineController.userOwnsGame(game) &&
+                        game.getMinPlayers() <= game.getPlayers().size() &&
+                        game.getMaxPlayers() >= game.getPlayers().size()) {
                     startButton.setDisable(false);
                 } else {
                     startButton.setDisable(true);

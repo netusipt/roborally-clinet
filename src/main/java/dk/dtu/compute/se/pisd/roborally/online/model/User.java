@@ -16,6 +16,10 @@ public class User {
 
     private String name;
 
+    // Mirrors backend User.players so Jackson can resolve forward references
+    // between Game.players and User.players when @JsonIdentityInfo is used.
+    private List<Player> players;
+
     // ...
 
     public long getUid() {
@@ -32,6 +36,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
     @Override

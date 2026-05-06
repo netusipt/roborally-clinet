@@ -40,3 +40,5 @@ build/
 
 ### Project settings ###
 /src/main/resources/properties/db.properties
+
+*.pdf

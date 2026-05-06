@@ -49,6 +49,8 @@ public class RoboRallyMenuBar extends MenuBar {
 
     private MenuItem signIn;
 
+    private MenuItem signUp;
+
     private MenuItem signOut;
 
     private MenuItem selectGame;
@@ -82,6 +84,10 @@ public class RoboRallyMenuBar extends MenuBar {
         signIn = new MenuItem("Sign In");
         signIn.setOnAction(e -> this.appController.signIn());
         controlMenu.getItems().add(signIn);
+
+        signUp = new MenuItem("Sign Up");
+        signUp.setOnAction(e -> this.appController.signUp());
+        controlMenu.getItems().add(signUp);
 
         signOut = new MenuItem("Sign Out");
         signOut.setOnAction(e -> this.appController.signOut());

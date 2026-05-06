@@ -163,6 +163,9 @@ public class AppController implements Observer {
     }
 
     // TODO Assignment 7c you might want to add a SignUp menu here
+    public void signUp() {
+        getOnlineController().signUp();
+    }
 
     public void selectGame() {
         getOnlineController().selectGame();

@@ -31,6 +31,12 @@ public class Game {
 
     private List<Player> players;
 
+    // Assignment 7c: owner of the game (mirrors backend reference)
+    private User owner;
+
+    // Assignment 7e: lifecycle state of the game (SIGNUP / ACTIVE)
+    private GameState state = GameState.SIGNUP;
+
     // TODO There could be more attributes here, kie
     //      in which state is the sign up for the game, did
     //      the game started or finish (after the game started
@@ -75,6 +81,22 @@ public class Game {
 
     public void setPlayers(List<Player> players) {
         this.players = players;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public GameState getState() {
+        return state;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
     }
 
     @Override

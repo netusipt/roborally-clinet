@@ -15,6 +15,9 @@ public class Player {
 
     private Game game;
 
+    // Assignment 7c: reference to the user this player represents
+    private User user;
+
     // ...
 
     public long getUid() {
@@ -39,6 +42,14 @@ public class Player {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 
